@@ -3,7 +3,7 @@ version: '3'
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
-  production_caddy: {}
+  production_traefik: {}
 
 services:
   django: &django
@@ -30,20 +30,19 @@ services:
     env_file:
       - ./.envs/.production/.postgres
 
-  caddy:
+  traefik:
     build:
       context: .
-      dockerfile: ./compose/production/caddy/Dockerfile
-    image: cride_production_caddy
+      dockerfile: ./compose/production/traefik/Dockerfile
+    image: mercadoro_back_production_traefik
     depends_on:
       - django
     volumes:
-      - production_caddy:/root/.caddy
-    env_file:
-      - ./.envs/.production/.caddy
+      - production_traefik:/etc/traefik/acme:z
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
+      - "0.0.0.0:5555:5555"
 
   redis:
     image: redis:3.2
